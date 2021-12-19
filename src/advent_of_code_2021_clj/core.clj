@@ -22,7 +22,7 @@
 
 (defn read-boards [board-str]
   (let [board-row-candidates (drop 2 (str/split board-str #"\n"))
-        board-rows (filter #(not (empty? %)) board-row-candidates)
+        board-rows (remove empty? board-row-candidates)
         board-row-strings (partition 5 board-rows)
         boards (map #((comp read-single-board (partial str/join "\n")) %) board-row-strings)]
     (vec boards)))
