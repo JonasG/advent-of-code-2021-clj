@@ -18,7 +18,25 @@
   (let [number-strings (str/split number-str #",")]
     (vec (map edn/read-string number-strings))))
 
+(defn read-input-file [filename] (slurp filename))
+
+(defn read-boards [board-str]
+  (let [board-row-candidates (drop 2 (str/split board-str #"\n"))
+        board-rows (filter #(not (empty? %)) board-row-candidates)
+        board-row-strings (partition 5 board-rows)
+        board-strings (map #(str/join "\n" %) board-row-strings)
+        boards (map #(read-single-board %) board-strings)]
+    (vec boards)))
+
+
+(defn parse-input [input-str] 
+  (let [lines (str/split input-str #"\n")
+        numbers (first (take 1 lines))
+        boards (read-boards (str/join "\n" lines))]
+    {:numbers (read-numbers numbers)
+     :boards boards}))
+
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (println "Hello, World!"))
+  (println (parse-input (read-input-file "day4.txt"))))
