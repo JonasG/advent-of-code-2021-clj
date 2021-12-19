@@ -30,11 +30,10 @@
 
 
 (defn parse-input [input-str] 
-  (let [lines (str/split input-str #"\n")
-        numbers (first (take 1 lines))
-        boards (read-boards (str/join "\n" lines))]
-    {:numbers (read-numbers numbers)
-     :boards boards}))
+  (let [boards (read-boards input-str)
+        lines (str/split input-str #"\n")
+        numbers (read-numbers (first (take 1 lines)))]
+    {:numbers numbers :boards boards}))
 
 (defn -main
   [& args]
