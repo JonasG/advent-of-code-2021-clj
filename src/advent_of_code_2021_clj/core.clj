@@ -27,30 +27,10 @@
         boards (map #((comp read-single-board (partial str/join "\n")) %) board-row-strings)]
     (vec boards)))
 
-(defn mark-single-board [number board]
-  (vec (map #(replace {number "X"} %) board)))
-
 (defn mark-boards [number boards]
-  (vec (map (partial mark-single-board number) boards)))
-
-(mark-single-board 8
-          [[1  2  3  4  5]
-           [6  7  8  9 10]
-           [11 12 13 14 15]
-           [16 17 18 19 20]
-           [21 22 23 24 25]])
-
-(mark-boards 8
-         [[[1  2  3  4  5]
-           [6  7  8  9 10]
-           [11 12 13 14 15]
-           [16 17 18 19 20]
-           [21 22 23 24 25]]
-          [[1  2  3  4  5]
-           [6  7  8  9 10]
-           [11 12 13 14 15]
-           [16 17 18 19 20]
-           [21 22 23 24 25]]])
+  (vec (map 
+         (fn [board] (vec (map (partial replace {number "X"}) board)))
+         boards)))
 
 (defn parse-input [input-str] 
   (let [boards (read-boards input-str)
