@@ -1,20 +1,18 @@
 (ns advent-of-code-2021-clj.core
+  (:require [clojure.string :as str])
   (:gen-class))
 
 (defn string-to-int [str]
   (Integer/parseInt str))
 
-(defn string-split [str pattern]
-  (clojure.string/split str pattern))
-
 (defn string-split-and-parse [str pattern]
   (let [trimmed (clojure.string/trim str)
-        strings (string-split trimmed pattern)
+        strings (str/split trimmed pattern)
         ints (map string-to-int strings)]
     (vec ints)))
 
 (defn read-single-board [board-str]
-  (let [lines (string-split board-str #"\n")
+  (let [lines (str/split board-str #"\n")
         numbers (map #(string-split-and-parse % #" +") lines)]
     (vec numbers)))
 
