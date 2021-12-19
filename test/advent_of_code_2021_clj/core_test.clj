@@ -39,3 +39,8 @@
   
   (testing "splitting a string that has multiple whitespaces in-between values"
   (is (= [1 2 3] (string-split-and-parse "1  2     3" #" +")))))
+
+(deftest test-read-numbers
+  (testing "reading numbers"
+  (is (= [7 4 9 5 11 17 23 2 0 14 21 24 10 16 13 6 15 25 12 22 18 20 8 19 3 26 1]
+         (read-numbers "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1")))))

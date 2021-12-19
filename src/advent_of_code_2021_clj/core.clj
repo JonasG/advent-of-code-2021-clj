@@ -16,7 +16,9 @@
         numbers (map #(string-split-and-parse % #" +") lines)]
     (vec numbers)))
 
-(read-single-board "1 2\n3 4")
+(defn read-numbers [number-str]
+  (let [number-strings (str/split number-str #",")]
+    (vec (map string-to-int number-strings))))
 
 (defn -main
   "I don't do a whole lot ... yet."
