@@ -6,17 +6,17 @@
 (defn string-split-and-parse [str pattern]
   (let [trimmed (clojure.string/trim str)
         strings (str/split trimmed pattern)
-        ints (map edn/read-string strings)]
-    (vec ints)))
+        ints (mapv edn/read-string strings)]
+    ints))
 
 (defn read-single-board [board-str]
   (let [lines (str/split-lines board-str)
-        numbers (map #(string-split-and-parse % #" +") lines)]
-    (vec numbers)))
+        numbers (mapv #(string-split-and-parse % #" +") lines)]
+    numbers))
 
 (defn read-numbers [number-str]
   (let [number-strings (str/split number-str #",")]
-    (vec (map edn/read-string number-strings))))
+    (mapv edn/read-string number-strings)))
 
 (defn read-input-file [filename] (slurp filename))
 
@@ -24,13 +24,13 @@
   (let [board-row-candidates (drop 2 (str/split board-str #"\n"))
         board-rows (remove empty? board-row-candidates)
         board-row-strings (partition 5 board-rows)
-        boards (map #((comp read-single-board (partial str/join "\n")) %) board-row-strings)]
-    (vec boards)))
+        boards (mapv #((comp read-single-board (partial str/join \newline)) %) board-row-strings)]
+    boards))
 
 (defn mark-boards [number boards]
-  (vec (map 
-         (fn [board] (vec (map (partial replace {number "X"}) board)))
-         boards)))
+  (mapv
+    (fn [board] (mapv (partial replace {number "X"}) board))
+    boards))
 
 (defn parse-input [input-str] 
   (let [boards (read-boards input-str)
