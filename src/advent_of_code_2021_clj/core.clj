@@ -27,10 +27,11 @@
         boards (mapv #((comp read-single-board (partial str/join \newline)) %) board-row-strings)]
     boards))
 
-(defn mark-boards [number boards]
-  (mapv
-    (fn [board] (mapv (partial replace {number "X"}) board))
-    boards))
+(defn mark-number-on-board [number board]
+  (mapv (partial replace {number "X"}) board))
+
+(defn mark-number-on-boards [number boards]
+  (mapv (partial mark-number-on-board number) boards))
 
 (defn parse-input [input-str] 
   (let [boards (read-boards input-str)
