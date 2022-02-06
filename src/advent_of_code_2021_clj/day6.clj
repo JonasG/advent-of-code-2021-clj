@@ -9,7 +9,7 @@
       0
       v)))
 
-(defn pass-day [fish _]
+(defn pass-day[fish _]
   (let [fishes (assoc {} 0 (get-safe fish 1)
                          1 (get-safe fish 2)
                          2 (get-safe fish 3)
@@ -21,13 +21,12 @@
                          8 (get-safe fish 0))]
     fishes))
 
-(defn solve [input-filename]
+(defn solve [input-filename days-to-pass]
   (let [input (slurp input-filename)
         values (map edn/read-string (str/split input #","))
         initial-fish (frequencies values)
-        final-fish (reduce pass-day initial-fish (range 80))
+        final-fish (reduce pass-day initial-fish (range days-to-pass))
         fish-count (reduce + (vals final-fish))]
     fish-count))
 
-;; (solve "day6-example.txt")
-(solve "day6.txt") ;; 386755
+(solve "day6.txt" 256)
