@@ -55,14 +55,29 @@
 (defn play-bingo [boards draws]
   (reduce (fn [board-state number-drawn]
             (let [new-board-state (mapv #(mark-board % number-drawn) board-state)]
-              (if (some board-won? new-board-state)
-                (reduced {:winning-board-state (some board-won? new-board-state) :number number-drawn})
+              (if-let [winning-board (some board-won? new-board-state)]
+                (reduced {:winning-board-state winning-board :number number-drawn})
                 new-board-state)))
           boards
           draws))
 
+(defn handle-draw [state number-drawn]
+            (let [new-board-state (mapv #(mark-board % number-drawn) (:boards state))]
+              (if-let [winning-board (some board-won? new-board-state)]
+                (assoc state :boards (remove board-won? new-board-state)
+                             :winning-board-state winning-board
+                             :number number-drawn)
+                (assoc state :boards new-board-state))))
+
+(defn play-bingo-lose [boards draws]
+  (reduce handle-draw {:boards boards} draws))
+
 (defn day4-part1 [input]
   (let [result (play-bingo (:boards input) (:numbers input))]
+     (score (:winning-board-state result) (:number result))))
+
+(defn day4-part2 [input]
+  (let [result (play-bingo-lose (:boards input) (:numbers input))]
      (score (:winning-board-state result) (:number result))))
 
 (defn parse-input [input-str] 
@@ -72,6 +87,7 @@
     {:numbers numbers :boards boards}))
 
 (day4-part1 (parse-input (read-input-file "day4.txt"))) ;; 67716
+(day4-part2 (parse-input (read-input-file "day4.txt"))) ;; 1830
 
 (defn -main
   [& args]
