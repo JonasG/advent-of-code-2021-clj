@@ -18,32 +18,19 @@
 (defn create-coordinate-usages [state coordinate]
   (update state coordinate #(if (nil? %) 1 (inc %))))
 
-(defn day5part1 [input-filename]
+(defn solve [input-filename filter-fn]
   (let [input (slurp input-filename)
         lines (str/split input #"\n")
         parsed-numbers-as-strings (mapv #(vector (re-seq #"\d+" %)) lines)
         flatted (mapv flatten parsed-numbers-as-strings)
         integers (mapv #(mapv edn/read-string %) flatted)
-        horizontal-and-vertical-lines (filter horizontal-or-veritcal? integers)
-        coordinates-nested (map #(generate-coordinates %) horizontal-and-vertical-lines)
+        filtered (filter filter-fn integers)
+        coordinates-nested (map #(generate-coordinates %) filtered)
         coordinates (partition 2 (flatten coordinates-nested))
         coordinate-usages (reduce create-coordinate-usages {} coordinates)
         coordinate-overlaps (vals coordinate-usages)
         overlap-count (count (filter #(< 1 %) coordinate-overlaps))]
     overlap-count))
 
-(defn day5part2 [input-filename]
-  (let [input (slurp input-filename)
-        lines (str/split input #"\n")
-        parsed-numbers-as-strings (mapv #(vector (re-seq #"\d+" %)) lines)
-        flatted (mapv flatten parsed-numbers-as-strings)
-        integers (mapv #(mapv edn/read-string %) flatted)
-        coordinates-nested (map #(generate-coordinates %) integers)
-        coordinates (partition 2 (flatten coordinates-nested))
-        coordinate-usages (reduce create-coordinate-usages {} coordinates)
-        coordinate-overlaps (vals coordinate-usages)
-        overlap-count (count (filter #(< 1 %) coordinate-overlaps))]
-    overlap-count))
-
-(day5part1 "day5.txt") ;; 4745
-(day5part2 "day5.txt") ;; 18442
+(solve "day5.txt" horizontal-or-veritcal?) ;; 4745
+(solve "day5.txt" (fn [input] true)) ;; 18442
