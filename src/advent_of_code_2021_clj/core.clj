@@ -39,15 +39,11 @@
     board
     false))
 
-(defn iterate-2d-vector-filtered [board filter]
-  (for [[_ row] (map-indexed list board)
-        [_ value] (map-indexed list row)
-        :when (filter value)]
-    value))
-
-(defn sum [coll] (reduce + coll))
 (defn score [board winning-number]
-  (* winning-number (sum (iterate-2d-vector-filtered board #(not (is-marked? %))))))
+  (let [values (flatten board)
+        unmarked (remove is-marked? values)
+        sum (reduce + unmarked)]
+  (* winning-number sum)))
 
 (defn mark-board [board number-drawn]
   (mapv #(replace {number-drawn "X"} %) board))
