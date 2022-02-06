@@ -32,5 +32,18 @@
         overlap-count (count (filter #(< 1 %) coordinate-overlaps))]
     overlap-count))
 
-;; (day5part1 "day5-example.txt")
+(defn day5part2 [input-filename]
+  (let [input (slurp input-filename)
+        lines (str/split input #"\n")
+        parsed-numbers-as-strings (mapv #(vector (re-seq #"\d+" %)) lines)
+        flatted (mapv flatten parsed-numbers-as-strings)
+        integers (mapv #(mapv edn/read-string %) flatted)
+        coordinates-nested (map #(generate-coordinates %) integers)
+        coordinates (partition 2 (flatten coordinates-nested))
+        coordinate-usages (reduce create-coordinate-usages {} coordinates)
+        coordinate-overlaps (vals coordinate-usages)
+        overlap-count (count (filter #(< 1 %) coordinate-overlaps))]
+    overlap-count))
+
 (day5part1 "day5.txt") ;; 4745
+(day5part2 "day5.txt") ;; 18442
