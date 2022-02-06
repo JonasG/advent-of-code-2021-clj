@@ -3,17 +3,13 @@
             [clojure.edn    :as edn]          )
   (:gen-class))
 
-(defn generate-coordinates [[x1 y1 x2 y2]]
-  (let [min-x (min x1 x2)
-        min-y (min y1 y2)
-        max-x (max x1 x2)
-        max-y (max y1 y2)
-        x-range (range min-x (inc max-x))
-        y-range (range min-y (inc max-y))
-        max-range-count (max (count x-range) (count y-range))]
-    (if (< (count x-range) (count y-range))
-      (map vector (repeat max-range-count (first x-range)) y-range)
-      (map vector x-range (repeat max-range-count (first y-range))))))
+(defn generate-coordinates[[x1 y1 x2 y2]]
+  (let [x-range (if (< x1 x2) (range x1 (inc x2)) (range x1 (dec x2) -1))
+        y-range (if (< y1 y2) (range y1 (inc y2)) (range y1 (dec y2) -1))]
+    (cond
+      (= (count x-range) (count y-range)) (map vector x-range y-range)
+      (< (count x-range) (count y-range)) (map vector (repeat (count y-range) (first x-range)) y-range)
+      :else (map vector x-range (repeat (count x-range) (first y-range))))))
 
 (defn horizontal-or-veritcal? [[x1 y1 x2 y2]]
   (or (= x1 x2)
@@ -37,15 +33,4 @@
     overlap-count))
 
 ;; (day5part1 "day5-example.txt")
-(day5part1 "day5.txt")
-
-;; 0,9 -> 5,9 H
-;; 8,0 -> 0,8
-;; 9,4 -> 3,4 H
-;; 2,2 -> 2,1 H
-;; 7,0 -> 7,4 H
-;; 6,4 -> 2,0
-;; 0,9 -> 2,9 H
-;; 3,4 -> 1,4 H
-;; 0,0 -> 8,8
-;; 5,5 -> 8,2
+(day5part1 "day5.txt") ;; 4745
