@@ -5,14 +5,19 @@
 
 (defn abs [num] (max num (- num)))
 
-(defn calculate-fuel-cost [positions target-position]
-  (let [fuel-cost-per-position (map #(abs (- target-position %)) positions)]
-    (reduce + fuel-cost-per-position)))
+(defn calculate-fuel-cost [cost-fn positions target-position]
+  (let [distances (map #(abs (- target-position %)) positions)
+        costs (map cost-fn distances)]
+    (reduce + costs)))
 
-(defn solve [input-filename]
+(defn solve [input-filename fuel-cost-fn]
   (let [positions (map edn/read-string (str/split (slurp input-filename) #","))
         max-value (apply max positions)
-        fuel-costs (map #(calculate-fuel-cost positions %) (range (inc max-value)))]
+        fuel-costs (map #(fuel-cost-fn positions %) (range (inc max-value)))]
     (apply min fuel-costs)))
 
-(solve "day7.txt")
+(defn distance-based-fuel-cost-unmem [distance] (reduce + (range (inc distance))))
+(def distance-based-fuel-cost (memoize distance-based-fuel-cost-unmem))
+
+;; (solve "day7.txt" (partial calculate-fuel-cost (fn [x] x))) ;; 352997
+(solve "day7.txt" (partial calculate-fuel-cost distance-based-fuel-cost)) ;; 101571302
