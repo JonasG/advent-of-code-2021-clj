@@ -71,7 +71,7 @@
         numbers (read-numbers (first (take 1 lines)))]
     {:numbers numbers :boards boards}))
 
-(day4-part1 (parse-input (read-input-file "day4.txt")))
+(day4-part1 (parse-input (read-input-file "day4.txt"))) ;; 67716
 
 (defn -main
   [& args]
