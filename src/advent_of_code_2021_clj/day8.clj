@@ -1,14 +1,8 @@
 (ns advent-of-code-2021-clj.day8
   (:require [clojure.string :as str]
-            [clojure.edn    :as edn]          )
+            [clojure.edn    :as edn]
+            [clojure.set    :as set])
   (:gen-class))
-
-(defn segment-count [target input] (filter #(= (count %) target) input))
-
-(def example-input '("be" "cfbegad" "cbdgef" "fgaecd" "cgeb" "fdcge" "agebfd" "fecdb" "fabcd" "edb"))
-
-(defn find-supersets-of [target as-sets]
-  (filter #(clojure.set/superset? % target) as-sets))
 
 (defn number-to-segment-mapping [input]
   (let [as-sets (map set input)]
@@ -16,15 +10,32 @@
                4 (first (segment-count 4 as-sets))
                7 (first (segment-count 3 as-sets))
                8 (first (segment-count 7 as-sets))} m
-      (assoc m 3 (first (find-supersets-of (get m 1) (segment-count 5 as-sets))))
-      (assoc m 9 (first (find-supersets-of (get m 3) (segment-count 6 as-sets))))
-      (assoc m 0 (first (->> as-sets
-                             (segment-count 6)
-                             (find-supersets-of (get m 1))
-                             (remove (get m 9)))))
-      (assoc m 6 (first (remove (get m 9) (remove (get m 0) (segment-count 6 as-sets)))))
-      (assoc m 5 (first (filter #(clojure.set/subset? % (get m 6)) (segment-count 5 as-sets))))
-      (assoc m 2 (first (remove (get m 3) (remove (get m 5) (segment-count 5 as-sets))))))))
+      (assoc m 3 (->> as-sets
+                      (filter #(= 5 (count %)))
+                      (filter #(set/superset? % (get m 1)))
+                      (first)))
+      (assoc m 9 (->> as-sets
+                      (filter #(= 6 (count %)))
+                      (filter #(set/superset? % (get m 3)))
+                      (first)))
+      (assoc m 0 (->> as-sets
+                      (filter #(= 6 (count %)))
+                      (filter #(set/superset? % (get m 1)))
+                      (remove (get m 9))
+                      (first)))
+      (assoc m 6 (->> as-sets
+                      (filter #(= 6 (count %)))
+                      (remove (get m 0))
+                      (remove (get m 9))
+                      (first)))
+      (assoc m 5 (->> as-sets
+                      (filter #(= 5 (count %)))
+                      (filter #(set/subset? % (get m 6)))
+                      (first)))
+      (assoc m 2 (->> as-sets
+                      (filter #(= 5 (count %)))
+                      (remove (get m 5))
+                      (remove (get m 3)))))))
 
 (number-to-segment-mapping '("acedgfb" "cdfbe" "gcdfa" "fbcad" "dab" "cefabd" "cdfgeb" "eafb" "cagedb" "ab"))
 
