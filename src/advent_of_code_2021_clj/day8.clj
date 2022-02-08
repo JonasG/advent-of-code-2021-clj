@@ -21,12 +21,12 @@
       (assoc m 0 (->> as-sets
                       (filter #(= 6 (count %)))
                       (filter #(set/superset? % (get m 1)))
-                      (remove (get m 9))
+                      (remove #(= % (get m 9)))
                       (first)))
       (assoc m 6 (->> as-sets
                       (filter #(= 6 (count %)))
-                      (remove (get m 0))
-                      (remove (get m 9))
+                      (remove #(= % (get m 0)))
+                      (remove #(= % (get m 9)))
                       (first)))
       (assoc m 5 (->> as-sets
                       (filter #(= 5 (count %)))
@@ -34,16 +34,33 @@
                       (first)))
       (assoc m 2 (->> as-sets
                       (filter #(= 5 (count %)))
-                      (remove (get m 5))
-                      (remove (get m 3)))))))
+                      (remove #(= % (get m 3)))
+                      (remove #(= % (get m 5)))
+                      (first))))))
 
-(number-to-segment-mapping '("acedgfb" "cdfbe" "gcdfa" "fbcad" "dab" "cefabd" "cdfgeb" "eafb" "cagedb" "ab"))
+;; (number-to-segment-mapping ["be" "cfbegad" "cbdgef" "fgaecd" "cgeb" "fdcge" "agebfd" "fecdb" "fabcd" "edb"])
+
+(defn decode [signal-patterns input]
+  (let [to-number-mapping (set/map-invert (number-to-segment-mapping signal-patterns))]
+    (get to-number-mapping (set input))))
+
+(defn decode-entry [entry]
+  (map #(decode (take 10 entry) %) (take 4 (drop 10 entry))))
+
+;; (decode-entry ["be" "cfbegad" "cbdgef" "fgaecd" "cgeb" "fdcge" "agebfd" "fecdb" "fabcd" "edb" "fdgacbe" "cefdb" "cefbgd" "gcbe"])
 
 (defn solve [input-filename]
   (let [lines (str/split (slurp input-filename) #"\n")
-        outputs (flatten (map #(take 4 (drop 11 (str/split % #" "))) lines))
-        output-length (map count outputs)
-        identifiable-numbers (filter #(contains? segment-to-number-mapping %) output-length)]
-    (count identifiable-numbers)))
+        signal-patterns (map #(as-> % data
+                                (str/split data #" ")
+                                (take 10 data)) lines)
+        outputs (map #(as-> % data
+                        (str/split data #" ")
+                        (drop 11 data)
+                        (take 4 data)) lines)
+        entries (map (comp flatten vector) signal-patterns outputs)
+        output-as-lists (map decode-entry entries)
+        output-as-numbers (map #(+ (* 1000 (first %)) (* 100 (second %)) (* 10 (nth % 2)) (last %)) output-as-lists)]
+    (reduce + output-as-numbers)))
 
-;; (solve "day8.txt")
+(solve "day8.txt")
