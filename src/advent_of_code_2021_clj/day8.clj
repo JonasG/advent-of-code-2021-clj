@@ -38,16 +38,12 @@
                       (remove #(= % (get m 5)))
                       (first))))))
 
-;; (number-to-segment-mapping ["be" "cfbegad" "cbdgef" "fgaecd" "cgeb" "fdcge" "agebfd" "fecdb" "fabcd" "edb"])
-
 (defn decode [signal-patterns input]
   (let [to-number-mapping (set/map-invert (number-to-segment-mapping signal-patterns))]
     (get to-number-mapping (set input))))
 
 (defn decode-entry [entry]
   (map #(decode (take 10 entry) %) (take 4 (drop 10 entry))))
-
-;; (decode-entry ["be" "cfbegad" "cbdgef" "fgaecd" "cgeb" "fdcge" "agebfd" "fecdb" "fabcd" "edb" "fdgacbe" "cefdb" "cefbgd" "gcbe"])
 
 (defn solve [input-filename]
   (let [lines (str/split (slurp input-filename) #"\n")
